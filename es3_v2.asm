@@ -26,7 +26,7 @@ array	.fill	5
 	.fill	0
 e_arr	.fill	32
 
-num1	.fill	0
+num1	.fill	21
 
 ;****************************************************
 ; Sottoprogramma 
@@ -38,11 +38,11 @@ subpr   st      r3,save_r3	; Salvo R3 che verrà usato
 	and	r3,r3,#0
 	add	r3,r3,#1    	; contatore che parte da 1
 
-ciclo	not	r4,r0		; Contollo se arrivo alla fine dell array
+ciclo	not	r4,r1		; Contollo se arrivo alla fine dell array
 	add	r4,r4,#1	;
-	add	r4,r1,r4	; indirizzo contenuto in R0(array + indice) - R4(fine dell array), se < 0 allora ho superato la fine essendo che gli array sono continui in memoria
-	brn	end_arr		; 
-
+	add	r4,r0,r4	; indirizzo contenuto in R0(array + indice) - R4(fine dell array), se < 0 allora ho superato la fine essendo che gli array sono continui in memoria
+	brp	end_arr		; 
+	
 	ldr	r5,r0,#0	; metto il il valore presente nella posizione dell array in R2
 
 	not	r5,r5		; controllo se nella posizione dell array attuale == valore che cerco	
