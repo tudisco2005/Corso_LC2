@@ -1,12 +1,12 @@
 ;Variante 1
 ;Scrivere un sottoprogramma che:
 ;
-;- riceve in R0 l’indirizzo del primo elemento di un array A di numeri in complemento a due diversi da zero;
+;- riceve in R0 lâ€™indirizzo del primo elemento di un array A di numeri in complemento a due diversi da zero;
 ;
-;la prima occorrenza del valore 0 costituisce il tappo dell’array, cioè ne indica la fine;
+;la prima occorrenza del valore 0 costituisce il tappo dellâ€™array, cioÃ¨ ne indica la fine;
 ;
 ;- riceve in R1 un numero N in complemento a due;
-;- restituisce in R0 l’indice I di N in A, cioè la posizione di N partendo da 1. Se il numero N non è presente in A, viene restituito il valore 0.
+;- restituisce in R0 lâ€™indice I di N in A, cioÃ¨ la posizione di N partendo da 1. Se il numero N non Ã¨ presente in A, viene restituito il valore 0.
 ;
 ;Qualora per la realizzazione del sottoprogramma fosse necessario utilizzare altri registri della CPU, il
 ;sottoprogramma stesso deve restituire il controllo al programma chiamante senza che tali registri risultino alterati.
@@ -30,13 +30,12 @@ num1	.fill	5
 ;****************************************************
 ; Sottoprogramma 
 
-subpr   st      r2,save_r2  	; Salvo R2 che verrà usato
-	st      r3,save_r3	; Salvo R2 che verrà usato
+subpr   st      r2,save_r2  	; Salvo R2 che verrÃ  usato
+	st      r3,save_r3	; Salvo R2 che verrÃ  usato
 
 	and	r3,r3,#0
 	add	r3,r3,#1    	; contatore che parte da 1
 ciclo	ldr	r2,r0,#0	; metto il il valore presente nella posizione dell array in R2
-	and	r2,r2,r2	; Contollo del segno
 	brz	end_arr		; se arrivo alla fine dell array
 	
 	not	r2,r2		; controllo se nella posizione dell array attuale == valore che cerco	
