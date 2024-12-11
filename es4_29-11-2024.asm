@@ -1,10 +1,37 @@
-1 tenere in registro della somma in ca2
-2 leggere un numero dall array
-3 converirlo in ca2
-4 sommaro al registro della somma
-5 sono alla fine convertirlo in modulo e segno
+; Scrivere un sottoprogramma che:
+;
+; - riceve in R0 l'indirizzo del primo elemento di un array di numeri in modulo e segno diversi da zero (lo zero costituisce il tappo finale dell'array)
+;
+; - restituisce in RO il risultato (in modulo e segno) della sommatoria di tutti i numeri dell'array, trascurando eventuali traboccamenti
+;
+; Qualora per la realizzazione del sottoprogramma fosse necessario utilizzare altri registri della CPU, il sottoprogramma stesso deve restituire 
+; il controllo al programma chiamante senza che tali registri risultino alterati.
 
-.orig	x4001
+
+; ALGORITMO
+; 1 tenere in registro della somma in ca2
+; 2 leggere un numero dall array
+; 3 converirlo in ca2
+; 4 sommaro al registro della somma
+; 5 sono alla fine convertirlo in modulo e segno
+
+; COVERSIONE DA CA2 a A MODULO E SEGNO
+; 1)	
+; Se MSB = 0, il numero -> positivo.
+; Se il bit del segno = 1, il numero -> negativo.
+;
+; 2)
+; Calcola il valore assoluto:
+; - Se il bit del segno = 0, i restanti bit rappresentano direttamente il modulo.
+; - Se il bit del segno = 1, devi calcolare il modulo
+;	- Inverti tutti i bit (complemento a 1).
+;	- Aggiungi 1 al risultato.
+;
+; 3)
+; Combina segno e modulo
+; fare OR con il bit del segno e il modulo
+
+	.orig	x4001
 	
 	lea	r0,arr
 	jsr	SOMMA
@@ -13,107 +40,60 @@ stoqui	brnzp	stoqui
 
 arr	.fill	b1000000000000001	; -1
 	.fill	b1000000000000010	; -2
-	.fill	b0000000000000100	; 4
-	.fill	b0000000000000000	; ha 2 possibili rappresentazioni b1000000000000000
+	.fill	b1000000000000100	; -4
+	.fill	b0000000000000101	; 5
+	.fill	b0000000000000010	; 2
+	.fill	b0000000000000000	; 0 (fine array)
 
 ; *************************************
 SOMMA 	st	r1,save_r1
-	st	r2,save_r2	
+	st	r2,save_r2		; contine la maschera per la conversione mask (mod e segno -> ca2)
 	st 	r3,save_r3
-	st	r4,save_r4
-	st	r5,save_r5
 
-ciclo	ld	r2,num
-	ld	r5,mask
-
+ciclo	ld	r2,mask
 	ldr	r1,r0,#0
-	brz	fine		; controllo prima rappresentazione dello 0 (b0000000000000000)
-	add	r4,r1,r2
-	brz	fine		; controllo seconda rappresentazione dello 0 (b1000000000000000)
+
+	; converto il numero da modulo e segno in ca2
 	
-; check del segno dei due operandi
-	and	r1,r1,r1
-	brp	r1_pos
-	brn	r1_neg
-
-r1_pos	and	r3,r3,r3
-	brzp	concr_p
-	brn	disc_p
-
-r1_neg	and	r3,r3,r3
-	brnz	concr_n
-	brp	disc_n
-
-concr_n	not	r2,r2
+	brp	sum			; se positivo la rappresentazione e' uguale
 	
-	and	r1,r1,r2	;azzera il segno del numero in modulo e segno
+	and	r1,r1,r2		; se negativo lo converto
 	not	r1,r1
-	add	r1,r1,#1	;cambio segno in complemento a 2
+	add	r1,r1,#1	
 
-	and	r3,r3,r2	;azzera il segno del numero in modulo e segno
-	not	r3,r3
-	add	r3,r3,#1	;cambio segno in complemento a 2
+	brz	fine		
 
-	add	r3,r3,r1	; sommo
-	
-	and	r3,r2,r3	; converto r3 in modulo e segno
-	not	r3,r3
-	add	r3,r3,#1
-	
-	not	r3,r3		
-	not	r5,r5
-		
-	and 	r3,r3,r5
-	not	r3,r3		
+sum	add	r3,r3,r1		; sommo r1 con r3 -> r3
 
-	brnzp	incr
-
-concr_p	add	r3,r1,r3
-	brnzp	incr
-
-disc_p	; converire r1 e r3 in ca2 e sommarli (r3 e' negativo)
-	brnzp	incr
-
-disc_n	not	r2,r2
-	and	r1,r1,r2
-	
-	not	r1,r1		; devo rendere negativo r1
-	add	r1,r1,#1
-
-	add	r3,r3,r1
-	
-	not	r2,r2
-	not	r3,r3
-	add	r3,r3,#1
-	
-	not	r3,r3
-	not	r5,r5
-		
-	and 	r3,r3,r5
-	not	r3,r3
-
-	brnzp	incr
-
-incr	add	r0,r0,#1
+	add	r0,r0,#1		; incremento dell inirizzo dell array
 	brnzp	ciclo
 
-fine	and	r0,r3,r3
-	ld	r1,save_r1
+conv_n	not	r3,r3			
+	add	r3,r3,#1
+	
+	not	r3,r3
+	and	r3,r3,r2
+	not	r3,r3			; OR per mettere il bit del segno a 1
+				
+	brnzp	res
+					; coverto il risultato della sommatoria in (ca2 -> mod e segno)
+fine	and	r3,r3,r3		; check del segno del risultato
+	
+	brn	conv_n			; se negativo converto
+	
+res	and	r0,r3,r3		; se e' positivo va bene gia cosi
+
+	ld	r1,save_r1		; ripristino i registri
 	ld	r2,save_r2	
 	ld 	r3,save_r3
-	ld	r4,save_r4
-	ld	r5,save_r5
 	ret
 
 ; variabili
-	
-num 	.fill	b1000000000000000
-mask	.fill	b1000000000000000
+
+mask	.fill	b0111111111111111
 
 save_r1	.blkw	1
 save_r2	.blkw	1
 save_r3	.blkw	1
-save_r4	.blkw	1
-save_r5	.blkw	1
 ; *************************************
 	.end
