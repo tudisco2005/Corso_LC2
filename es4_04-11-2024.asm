@@ -1,3 +1,13 @@
+; Il candidato scriva un sottoprogramma denominato OR_ARRAY che riceve:
+; - 1. nel registro R0 l’indirizzo della prima cella di una zona di memoria contenente una sequenza di stringhe
+; di 16 bit ciascuna; la stringa costituita da tutti zeri è il terminatore della sequenza e non va considerata;
+; - 2. nel registro R1 una stringa di 16 bit.
+; Il sottoprogramma deve sostituire a ogni stringa dell’array l’OR (somma logica) tra la stringa presente nell’array
+; e la stringa ricevuta in R1. Si ricorda che per il teorema di De Morgan:
+; NOT(a OR b) = NOT(a) AND NOT(b)
+; Qualora per la realizzazione del sottoprogramma fosse necessario utilizzare altri registri della CPU, il
+; sottoprogramma stesso deve restituire il controllo al programma chiamante senza che tali registri risultino alterati.
+
 	.orig	x4001
 	lea	r0,arr
 	ld	r1,num1
