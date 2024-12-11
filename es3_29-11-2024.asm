@@ -1,4 +1,4 @@
-; convertire un numero da mudulo e segno in CA2 ricevuto nell registro0
+; convertire un numero da mudulo e segno in CA2 ricevuto nell r0
 
 	.orig	x4000
 	ld	r0,n1
