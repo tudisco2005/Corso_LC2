@@ -1,4 +1,10 @@
-	.orig	x4001
+1 tenere in registro della somma in ca2
+2 leggere un numero dall array
+3 converirlo in ca2
+4 sommaro al registro della somma
+5 sono alla fine convertirlo in modulo e segno
+
+.orig	x4001
 	
 	lea	r0,arr
 	jsr	SOMMA
